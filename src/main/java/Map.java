@@ -8,7 +8,7 @@ import java.util.Scanner;
 @Getter
 public class Map {
 
-    private List<java.util.Map<Integer, Boolean>> columnList = new ArrayList<java.util.Map<Integer, Boolean>>();
+    private List<java.util.Map<Integer, Boolean>> rowList = new ArrayList<java.util.Map<Integer, Boolean>>();
     private int size;
     private String playerMoves;
     private Position startPlayerPosition;
@@ -16,6 +16,9 @@ public class Map {
     public Map(Scanner scanner) {
         String currentLine = scanner.nextLine();
         this.size = Integer.parseInt(currentLine.replaceAll("\\D", ""));
+        if (size == 0) {
+            throw new InvalidMapException("Map size can not be zero");
+        }
         while (scanner.hasNext()) {
             currentLine = scanner.nextLine();
             if (currentLine.contains("R") || currentLine.contains("L") || currentLine.contains("U") || currentLine.contains("D")) {
@@ -38,16 +41,31 @@ public class Map {
                     case 'P' :
                         row.put(columnNumber, false);
                         columnNumber++;
-                        startPlayerPosition = new Position(columnNumber - 1, columnList.size());
+                        startPlayerPosition = new Position(columnNumber - 1, rowList.size());
                 }
             }
             if (row.size() != size) {
                 throw new InvalidMapException("Not enough map elements");
             }
-            columnList.add(row);
+            rowList.add(row);
         }
-        if (columnList.size() != size) {
+        if (rowList.size() != size) {
             throw new InvalidMapException("Not enough map elements");
+        }
+    }
+
+    public char getValueAt(int x, int y) {
+        if (rowList.get(y).get(x)) {
+            return '1';
+        } else {
+            return '0';
+        }
+    }
+
+    public void print() {
+        for (java.util.Map<Integer, Boolean> row : rowList) {
+            row.forEach((key, value) -> System.out.print(value));
+            System.out.println();
         }
     }
 }
